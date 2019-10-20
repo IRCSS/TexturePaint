@@ -41,7 +41,7 @@
 			float4    _Mouse;
 			float4x4  mesh_Object2World;
 			sampler2D _MainTex;
-
+			float4 _BrushColor;
 
 			// =====================================================================================================================
 			// VERTEX FRAGMENT ----------------------------------
@@ -67,7 +67,7 @@
 				float  f	= distance(_Mouse.xyz, i.worldPos);
 					   f    = 1.-smoothstep(0., 0.02, f);
 				
-					   col -= f * _Mouse.w;
+					   col  = lerp(col, _BrushColor, f * _Mouse.w);
 					   col  = saturate(col);
 
 				return col;
