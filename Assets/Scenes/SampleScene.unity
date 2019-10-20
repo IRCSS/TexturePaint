@@ -1056,7 +1056,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1173,6 +1173,7 @@ MonoBehaviour:
   UVShader: {fileID: 4800000, guid: d39c13fa40470d84eaae92a154ecf1f0, type: 3}
   runTimeTexture: {fileID: 0}
   meshToDraw: {fileID: 4300000, guid: b66f355f93abded42a5f96ba9d122de3, type: 3}
+  ilsandMarkerShader: {fileID: 4800000, guid: d39c13fa40470d84eaae92a154ecf1f0, type: 3}
 --- !u!114 &534669907
 MonoBehaviour:
   m_ObjectHideFlags: 0
