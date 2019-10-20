@@ -13,6 +13,7 @@ public class TexturePaint : MonoBehaviour {
     public Shader        UVShader;                     // the shader usedto draw in the texture of the mesh
     public RenderTexture runTimeTexture;               // the actual shader the stuff are going to be drawn to
     public Mesh          meshToDraw;
+    public Shader        ilsandMarkerShader;
 
     public static Vector3 mouseWorldPosition;
 
@@ -22,6 +23,9 @@ public class TexturePaint : MonoBehaviour {
     private Camera          mainC;
     private int             clearTexture;
     private RenderTexture   paintedTexture;             // The runtime texture is always blited in to this for in take for next render loop
+    private RenderTexture   markedIlsandes;
+    private CommandBuffer   cb_markingIlsdands;
+    private int numberOfFrames;
     // ======================================================================================================================
     // INITIALIZE -------------------------------------------------------------------
 
@@ -58,15 +62,28 @@ public class TexturePaint : MonoBehaviour {
 
         // Command buffer inialzation ------------------------------------------------
 
+        cb_markingIlsdands = new CommandBuffer();
+        cb_markingIlsdands.name = "markingIlsnads";
+
+        markedIlsandes = new RenderTexture(baseTexture.width, baseTexture.height, 0, RenderTextureFormat.R8);
+        cb_markingIlsdands.SetRenderTarget(markedIlsandes);
+        Material mIlsandMarker = new Material(ilsandMarkerShader);
+        cb_markingIlsdands.DrawMesh(meshToDraw, Matrix4x4.identity, mIlsandMarker);
+        mainC.AddCommandBuffer(CameraEvent.AfterDepthTexture, cb_markingIlsdands);
+
+
         cb      =  new CommandBuffer();
         cb.name =  "TexturePainting";
 
+        
         cb.SetRenderTarget(runTimeTexture);
         cb.DrawMesh(meshToDraw, Matrix4x4.identity, m);
         cb.Blit(runTimeTexture, paintedTexture);
         mainC.AddCommandBuffer(CameraEvent.AfterDepthTexture, cb);
 
-  
+
+     
+        
 
     }
     // ======================================================================================================================
@@ -74,6 +91,8 @@ public class TexturePaint : MonoBehaviour {
 
     private void Update()
     {
+        if (numberOfFrames > 2) mainC.RemoveCommandBuffer(CameraEvent.AfterDepthTexture, cb_markingIlsdands);
+
         RaycastHit hit;
         Ray        ray = mainC.ScreenPointToRay(Input.mousePosition);
         Vector4    mwp = Vector3.positiveInfinity;
@@ -90,8 +109,9 @@ public class TexturePaint : MonoBehaviour {
         Shader.SetGlobalVector("_Mouse", mwp);
         m.SetMatrix("mesh_Object2World", meshGameobject.transform.localToWorldMatrix);
 
+        numberOfFrames++;
 
-       
+
     }
 
     // ======================================================================================================================
