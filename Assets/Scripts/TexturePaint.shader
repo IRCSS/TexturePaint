@@ -65,7 +65,7 @@
 			{
 				float4 col  = tex2D(_MainTex, i.uv);
 				float  f	= distance(_Mouse.xyz, i.worldPos);
-					   f    = 1.-smoothstep(0., 0.03, f);
+					   f    = 1.-smoothstep(0., 0.02, f);
 				
 					   col -= f * _Mouse.w;
 					   col  = saturate(col);

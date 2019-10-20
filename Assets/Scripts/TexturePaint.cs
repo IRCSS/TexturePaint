@@ -42,7 +42,7 @@ public class TexturePaint : MonoBehaviour {
         paintedTexture = new RenderTexture(baseTexture.width, baseTexture.height, 0)
         {
             anisoLevel = 0,
-            useMipMap = false,
+            useMipMap  = false,
             filterMode = FilterMode.Point
         };
 
