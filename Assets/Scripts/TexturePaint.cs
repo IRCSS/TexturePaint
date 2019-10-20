@@ -14,6 +14,8 @@ public class TexturePaint : MonoBehaviour {
     public RenderTexture runTimeTexture;               // the actual shader the stuff are going to be drawn to
     public Mesh          meshToDraw;
 
+    public static Vector3 mouseWorldPosition;
+
     // --------------------------------
     private Material        m;                          // material which the UV shader is binded to
     private CommandBuffer   cb;                         // commandbuffer used to run the UV shader on camera event
@@ -84,7 +86,7 @@ public class TexturePaint : MonoBehaviour {
 
         mwp.w = Input.GetMouseButton(0)? 1 : 0;
 
-
+        mouseWorldPosition = mwp;
         Shader.SetGlobalVector("_Mouse", mwp);
         m.SetMatrix("mesh_Object2World", meshGameobject.transform.localToWorldMatrix);
 

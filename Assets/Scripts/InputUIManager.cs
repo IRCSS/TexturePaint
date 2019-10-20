@@ -8,6 +8,7 @@ public class InputUIManager : MonoBehaviour, IPointerClickHandler, IDragHandler
 {
 
     public Shader ColorPickerShader;
+    public Shader brushShader;
 
     private RawImage valueSaturationPicker;
     private RawImage huePicker;
@@ -16,13 +17,24 @@ public class InputUIManager : MonoBehaviour, IPointerClickHandler, IDragHandler
 
     private Button switchButton;
 
+    private Slider opacitySlider;
+    private Slider sizeSlider;
+    private Slider hardnessSlider;
+
+
     private GameObject[] allUIElements;
     private RenderTexture valueSaturationImage;
     private RenderTexture huePickerImage;
     private Material mColorPicker;
 
-    private Vector3 ColorPickerCurrentHSV = new Vector3(1f, 1f, 0.5f);
+    private GameObject mouseRepresentation;
+    private GameObject mouseHardnessRepresentation;
+    private Material mouseMaterial;
+    private Material mouseSoftnessMaterial;
 
+    private Vector3 ColorPickerCurrentHSV = new Vector3(1f, 1f, 0.5f);
+    private float brushSize;
+    private float brushHardness;
 
 
     void OnDisable()
@@ -57,6 +69,22 @@ public class InputUIManager : MonoBehaviour, IPointerClickHandler, IDragHandler
         switchButton = InitializeUIElement("SwitchBackForeGround").GetComponent<Button>();
         switchButton.onClick.AddListener(() => buttonCallBack(switchButton));
 
+        opacitySlider = InitializeUIElement("Opacity").GetComponent<Slider>();
+        sizeSlider = InitializeUIElement("Size").GetComponent<Slider>();
+        hardnessSlider = InitializeUIElement("Hardness").GetComponent<Slider>();
+
+
+        mouseRepresentation = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        mouseRepresentation.GetComponent<SphereCollider>().enabled = false;
+        mouseMaterial = new Material(brushShader);
+
+        mouseRepresentation.GetComponent<Renderer>().material = mouseMaterial;
+
+        mouseSoftnessMaterial = new Material(brushShader);
+        mouseHardnessRepresentation = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        mouseHardnessRepresentation.GetComponent<SphereCollider>().enabled = false;
+        mouseHardnessRepresentation.GetComponent<Renderer>().material = mouseSoftnessMaterial;
+
     }
 	
 	// Update is called once per frame
@@ -71,7 +99,23 @@ public class InputUIManager : MonoBehaviour, IPointerClickHandler, IDragHandler
         Graphics.Blit(Texture2D.whiteTexture, huePickerImage, mColorPicker, 1);
 
         Shader.SetGlobalColor("_BrushColor", foreground.color);
+        
+        Shader.SetGlobalFloat("_BrushOpacity", opacitySlider.value);
+        brushSize = sizeSlider.value * .6f;
+        Shader.SetGlobalFloat("_BrushSize", brushSize);
+        brushHardness = hardnessSlider.value;
+        Shader.SetGlobalFloat("_BrushHardness", brushHardness);
 
+        if (TexturePaint.mouseWorldPosition.x == Mathf.Infinity) mouseRepresentation.transform.position = new Vector3(1000f, 1000f, 1000f);
+        else mouseRepresentation.transform.position = TexturePaint.mouseWorldPosition;
+        mouseRepresentation.transform.localScale = new Vector3(brushSize*2.0f, brushSize * 2.0f, brushSize * 2.0f);
+
+        mouseHardnessRepresentation.transform.position = mouseRepresentation.transform.position;
+        mouseHardnessRepresentation.transform.localScale = mouseRepresentation.transform.localScale * brushHardness;
+
+
+        mouseMaterial.SetColor("_Color", foreground.color);
+        mouseSoftnessMaterial.SetColor("_Color", new Color(1f-foreground.color.r, 1f - foreground.color.g, 1f - foreground.color.b));
     }
 
     private GameObject InitializeUIElement(string name)
@@ -124,6 +168,7 @@ public class InputUIManager : MonoBehaviour, IPointerClickHandler, IDragHandler
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (eventData.pointerCurrentRaycast.gameObject == null) return;
         string objectName = eventData.pointerCurrentRaycast.gameObject.name;
 
         switch (objectName)
@@ -150,6 +195,23 @@ public class InputUIManager : MonoBehaviour, IPointerClickHandler, IDragHandler
                 Color c = foreground.color;
                 foreground.color = backGround.color;
                 backGround.color = c;
+                break;
+        }
+    }
+
+    private void sliderCallBack(float value, Slider s)
+    {
+        string nameOfSlider = s.gameObject.name;
+        switch (nameOfSlider)
+        {
+            case "Opacity":
+
+                break;
+            case "Size":
+
+                break;
+            case "Hardness":
+
                 break;
         }
     }

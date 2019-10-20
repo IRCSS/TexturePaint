@@ -671,7 +671,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1405,7 +1405,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 0.5
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2059,6 +2059,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ColorPickerShader: {fileID: 4800000, guid: b27fa81f06a9f23438866297617dfde2, type: 3}
+  brushShader: {fileID: 4800000, guid: 04eb8c138cbd7fc43a8aa07ac9d9760e, type: 3}
 --- !u!1 &1902939436
 GameObject:
   m_ObjectHideFlags: 0
@@ -2319,7 +2320,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 0.5
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []

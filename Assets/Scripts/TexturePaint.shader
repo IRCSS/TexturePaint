@@ -42,6 +42,9 @@
 			float4x4  mesh_Object2World;
 			sampler2D _MainTex;
 			float4 _BrushColor;
+			float _BrushOpacity;
+			float _BrushHardness;
+			float _BrushSize;
 
 			// =====================================================================================================================
 			// VERTEX FRAGMENT ----------------------------------
@@ -64,10 +67,12 @@
 			fixed4 frag (v2f i) : SV_Target
 			{
 				float4 col  = tex2D(_MainTex, i.uv);
+				float  size = _BrushSize;
+				float  soft = _BrushHardness;
 				float  f	= distance(_Mouse.xyz, i.worldPos);
-					   f    = 1.-smoothstep(0., 0.02, f);
+					   f    = 1.-smoothstep(size*soft, size, f);
 				
-					   col  = lerp(col, _BrushColor, f * _Mouse.w);
+					   col  = lerp(col, _BrushColor, f * _Mouse.w * _BrushOpacity);
 					   col  = saturate(col);
 
 				return col;
