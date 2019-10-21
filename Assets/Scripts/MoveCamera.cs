@@ -6,17 +6,17 @@ public class MoveCamera : MonoBehaviour {
 
 
     public float HorizontalVerticalSensitivity = 0.1f;
-    public float UpDownSensitivity = 0.015f;
-    public bool InvertedY = false;
+    public float UpDownSensitivity             = 0.015f;
+    public bool  InvertedY                     = false;
     public float SpeedMultiplyerOnShiftPressed = 4f;
 
     private float moveUpDown;
     private float speedMultiplyer = 1f;
-    private float inversion = -1f;
+    private float inversion       = -1f;
     void Start()
     {
         if (InvertedY) inversion = 1f;
-        else inversion = -1f;
+        else           inversion = -1f;
 
     }
     
@@ -24,8 +24,8 @@ public class MoveCamera : MonoBehaviour {
 
         if (!Input.GetKey(KeyCode.Mouse1)) return;
        
-        float x = Input.GetAxis("Horizontal");
-        float y = Input.GetAxis("Vertical");
+        float x      = Input.GetAxis("Horizontal");
+        float y      = Input.GetAxis("Vertical");
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 

@@ -41,10 +41,10 @@
 			float4    _Mouse;
 			float4x4  mesh_Object2World;
 			sampler2D _MainTex;
-			float4 _BrushColor;
-			float _BrushOpacity;
-			float _BrushHardness;
-			float _BrushSize;
+			float4	  _BrushColor;
+			float	  _BrushOpacity;
+			float	  _BrushHardness;
+			float	  _BrushSize;
 
 			// =====================================================================================================================
 			// VERTEX FRAGMENT ----------------------------------

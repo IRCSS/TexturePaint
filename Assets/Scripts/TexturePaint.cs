@@ -14,7 +14,8 @@ public class TexturePaint : MonoBehaviour {
     public RenderTexture runTimeTexture;               // the actual shader the stuff are going to be drawn to
     public Mesh          meshToDraw;
     public Shader        ilsandMarkerShader;
-
+    public Shader        fixIlsandEdgesShader;
+   
     public static Vector3 mouseWorldPosition;
 
     // --------------------------------
@@ -24,8 +25,10 @@ public class TexturePaint : MonoBehaviour {
     private int             clearTexture;
     private RenderTexture   paintedTexture;             // The runtime texture is always blited in to this for in take for next render loop
     private RenderTexture   markedIlsandes;
+    private RenderTexture   fixedIlsands;
     private CommandBuffer   cb_markingIlsdands;
-    private int numberOfFrames;
+    private int             numberOfFrames;
+    private Material        fixEdgesMaterial;
     // ======================================================================================================================
     // INITIALIZE -------------------------------------------------------------------
 
@@ -42,15 +45,19 @@ public class TexturePaint : MonoBehaviour {
         {
             anisoLevel = 0,
             useMipMap  = false, 
-            filterMode = FilterMode.Point
+            filterMode = FilterMode.Bilinear
         };
 
         paintedTexture = new RenderTexture(baseTexture.width, baseTexture.height, 0)
         {
             anisoLevel = 0,
             useMipMap  = false,
-            filterMode = FilterMode.Point
+            filterMode = FilterMode.Bilinear
         };
+
+        fixedIlsands = new RenderTexture(paintedTexture.descriptor);
+
+        markedIlsandes = new RenderTexture(baseTexture.width, baseTexture.height, 0, RenderTextureFormat.R8);
 
         m = new Material(UVShader);
         if (!m.SetPass(0)) Debug.LogError("Invalid Shader Pass: " + this.name);
@@ -60,12 +67,15 @@ public class TexturePaint : MonoBehaviour {
         meshMaterial.SetTexture("_MainTex", runTimeTexture);
         ClearTexture();
 
+        fixEdgesMaterial = new Material(fixIlsandEdgesShader);
+        fixEdgesMaterial.SetTexture("_IlsandMap", markedIlsandes);
+        fixEdgesMaterial.SetTexture("_MainTex", paintedTexture);
         // Command buffer inialzation ------------------------------------------------
 
         cb_markingIlsdands = new CommandBuffer();
         cb_markingIlsdands.name = "markingIlsnads";
 
-        markedIlsandes = new RenderTexture(baseTexture.width, baseTexture.height, 0, RenderTextureFormat.R8);
+      
         cb_markingIlsdands.SetRenderTarget(markedIlsandes);
         Material mIlsandMarker = new Material(ilsandMarkerShader);
         cb_markingIlsdands.DrawMesh(meshToDraw, Matrix4x4.identity, mIlsandMarker);
@@ -78,6 +88,11 @@ public class TexturePaint : MonoBehaviour {
         
         cb.SetRenderTarget(runTimeTexture);
         cb.DrawMesh(meshToDraw, Matrix4x4.identity, m);
+
+        cb.Blit(runTimeTexture, fixedIlsands, fixEdgesMaterial);
+        cb.Blit(fixedIlsands, runTimeTexture);
+
+
         cb.Blit(runTimeTexture, paintedTexture);
         mainC.AddCommandBuffer(CameraEvent.AfterDepthTexture, cb);
 
