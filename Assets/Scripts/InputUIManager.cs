@@ -7,34 +7,34 @@ using UnityEngine.EventSystems;
 public class InputUIManager : MonoBehaviour, IPointerClickHandler, IDragHandler
 {
 
-    public Shader ColorPickerShader;
-    public Shader brushShader;
+    public  Shader   ColorPickerShader;
+    public  Shader   brushShader;
 
     private RawImage valueSaturationPicker;
     private RawImage huePicker;
     private RawImage foreground;
     private RawImage backGround;
 
-    private Button switchButton;
+    private Button   switchButton;
 
-    private Slider opacitySlider;
-    private Slider sizeSlider;
-    private Slider hardnessSlider;
+    private Slider   opacitySlider;
+    private Slider   sizeSlider;
+    private Slider   hardnessSlider;
 
 
-    private GameObject[] allUIElements;
+    private GameObject[]  allUIElements;
     private RenderTexture valueSaturationImage;
     private RenderTexture huePickerImage;
-    private Material mColorPicker;
+    private Material      mColorPicker;
 
     private GameObject mouseRepresentation;
     private GameObject mouseHardnessRepresentation;
-    private Material mouseMaterial;
-    private Material mouseSoftnessMaterial;
+    private Material   mouseMaterial;
+    private Material   mouseSoftnessMaterial;
 
     private Vector3 ColorPickerCurrentHSV = new Vector3(1f, 1f, 0.5f);
-    private float brushSize;
-    private float brushHardness;
+    private float   brushSize;
+    private float   brushHardness;
 
 
     void OnDisable()
@@ -90,6 +90,8 @@ public class InputUIManager : MonoBehaviour, IPointerClickHandler, IDragHandler
 	// Update is called once per frame
 	void Update () {
 
+
+        if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
 
         mColorPicker.SetFloat("_Hue", ColorPickerCurrentHSV.x);
         Graphics.Blit(Texture2D.whiteTexture, valueSaturationImage, mColorPicker, 0);
