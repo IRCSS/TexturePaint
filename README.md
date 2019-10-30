@@ -5,6 +5,9 @@ This repo contains a setup to render directly in the texture of a mesh. The code
 
 ![screenshot](https://i.imgur.com/cAA22EW.gif)
 
+
+Edit: Added support for painting in Albedo, Metalic and Gloss.
+
 Known Issues
 =================
 There is no support for mipmapping at the moment. 
