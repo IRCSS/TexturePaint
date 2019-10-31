@@ -7,19 +7,23 @@ using UnityEngine.EventSystems;
 public class InputUIManager : MonoBehaviour, IPointerClickHandler, IDragHandler
 {
 
-    public  Shader   ColorPickerShader;
-    public  Shader   brushShader;
+    public  Shader        ColorPickerShader;
+    public  Shader        brushShader;
+    public  TexturePaint  texturePaintHardRef;                      
 
-    private RawImage valueSaturationPicker;
-    private RawImage huePicker;
-    private RawImage foreground;
-    private RawImage backGround;
-
-    private Button   switchButton;
-
-    private Slider   opacitySlider;
-    private Slider   sizeSlider;
-    private Slider   hardnessSlider;
+    private RawImage      valueSaturationPicker;
+    private RawImage      huePicker;
+    private RawImage      foreground;
+    private RawImage      backGround;
+                          
+    private Button        switchButton;
+    private Button        albedoButton;
+    private Button        metalicButton;
+    private Button        smotthnessButton;
+                          
+    private Slider        opacitySlider;
+    private Slider        sizeSlider;
+    private Slider        hardnessSlider;
 
 
     private GameObject[]  allUIElements;
@@ -27,64 +31,78 @@ public class InputUIManager : MonoBehaviour, IPointerClickHandler, IDragHandler
     private RenderTexture huePickerImage;
     private Material      mColorPicker;
 
-    private GameObject mouseRepresentation;
-    private GameObject mouseHardnessRepresentation;
-    private Material   mouseMaterial;
-    private Material   mouseSoftnessMaterial;
+    private GameObject    mouseRepresentation;
+    private GameObject    mouseHardnessRepresentation;
+    private Material      mouseMaterial;
+    private Material      mouseSoftnessMaterial;
 
-    private Vector3 ColorPickerCurrentHSV = new Vector3(1f, 1f, 0.5f);
-    private float   brushSize;
-    private float   brushHardness;
+    private Vector3       ColorPickerCurrentHSV = new Vector3(1f, 1f, 0.5f);
+    private float         brushSize;
+    private float         brushHardness;
 
 
     void OnDisable()
     {
-        switchButton.onClick.RemoveAllListeners();
+
+        switchButton    .onClick.RemoveAllListeners();
+        metalicButton   .onClick.RemoveAllListeners();
+        smotthnessButton.onClick.RemoveAllListeners();
+        albedoButton    .onClick.RemoveAllListeners();
     }
 
     void Start ()
     {
-         allUIElements = new GameObject[this.transform.childCount];
+        allUIElements         = new GameObject[this.transform.childCount];
          for(int i = 0; i< allUIElements.Length; i++)
          {
              allUIElements[i] = this.transform.GetChild(i).gameObject;
          }
-         
-         valueSaturationPicker= InitializeUIElement("SaturationValuePicker").GetComponent<RawImage>();
-         valueSaturationImage = new RenderTexture(1000, 1000, 0);
-         valueSaturationPicker.texture = valueSaturationImage;
-         
-         huePicker = InitializeUIElement("HuePicker").GetComponent<RawImage>();
-         huePickerImage = new RenderTexture(1000,200, 0);
-         huePicker.texture = huePickerImage;
-         
-         mColorPicker = new Material(ColorPickerShader);
-         
-         foreground = InitializeUIElement("ForegroundColor").GetComponent<RawImage>();
-         foreground.texture = Texture2D.whiteTexture;
-
-        backGround = InitializeUIElement("BackgroundColor").GetComponent<RawImage>();
-        backGround.texture = Texture2D.whiteTexture;
-
-        switchButton = InitializeUIElement("SwitchBackForeGround").GetComponent<Button>();
+        
+        valueSaturationPicker         = InitializeUIElement("SaturationValuePicker").GetComponent<RawImage>();
+        valueSaturationImage          = new RenderTexture(1000, 1000, 0);
+        valueSaturationPicker.texture = valueSaturationImage;
+        
+        huePicker             = InitializeUIElement("HuePicker").GetComponent<RawImage>();
+        huePickerImage        = new RenderTexture(1000,200, 0);
+        huePicker.texture     = huePickerImage;
+        
+        mColorPicker          = new Material(ColorPickerShader);
+                             
+        foreground            = InitializeUIElement("ForegroundColor").GetComponent<RawImage>();
+        foreground.texture    = Texture2D.whiteTexture;
+                             
+        backGround            = InitializeUIElement("BackgroundColor").GetComponent<RawImage>();
+        backGround.texture    = Texture2D.whiteTexture;
+                              
+        switchButton          = InitializeUIElement("SwitchBackForeGround").GetComponent<Button>();
         switchButton.onClick.AddListener(() => buttonCallBack(switchButton));
 
-        opacitySlider = InitializeUIElement("Opacity").GetComponent<Slider>();
-        sizeSlider = InitializeUIElement("Size").GetComponent<Slider>();
-        hardnessSlider = InitializeUIElement("Hardness").GetComponent<Slider>();
+        albedoButton          = InitializeUIElement("Albedo").GetComponent<Button>();
+        albedoButton.onClick.AddListener(() => buttonCallBack(albedoButton));
+
+        metalicButton         = InitializeUIElement("Metalic").GetComponent<Button>();
+        metalicButton.onClick.AddListener(() => buttonCallBack(metalicButton));
+
+        smotthnessButton      = InitializeUIElement("Smoothness").GetComponent<Button>();
+        smotthnessButton.onClick.AddListener(() => buttonCallBack(smotthnessButton));
 
 
-        mouseRepresentation = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        opacitySlider         = InitializeUIElement("Opacity").GetComponent<Slider>();
+        sizeSlider            = InitializeUIElement("Size").GetComponent<Slider>();
+        hardnessSlider        = InitializeUIElement("Hardness").GetComponent<Slider>();
+        
+        
+        mouseRepresentation   = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         mouseRepresentation.GetComponent<SphereCollider>().enabled = false;
-        mouseMaterial = new Material(brushShader);
-
+        mouseMaterial         = new Material(brushShader);
+        
         mouseRepresentation.GetComponent<Renderer>().material = mouseMaterial;
-
-        mouseSoftnessMaterial = new Material(brushShader);
+        
+        mouseSoftnessMaterial       = new Material(brushShader);
         mouseHardnessRepresentation = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         mouseHardnessRepresentation.GetComponent<SphereCollider>().enabled = false;
         mouseHardnessRepresentation.GetComponent<Renderer>().material = mouseSoftnessMaterial;
-
+         
     }
 	
 	// Update is called once per frame
@@ -194,10 +212,21 @@ public class InputUIManager : MonoBehaviour, IPointerClickHandler, IDragHandler
         switch (nameOfButton)
         {
             case "SwitchBackForeGround":
-                Color c = foreground.color;
+                Color c          = foreground.color;
                 foreground.color = backGround.color;
                 backGround.color = c;
                 break;
+            case "Albedo":
+                texturePaintHardRef.SetAlbedoActive();
+                break;
+
+            case "Metalic":
+                texturePaintHardRef.SetMetalicActive();
+                break;
+            case "Smoothness":
+                texturePaintHardRef.SetGlossActive();
+                break;
+
         }
     }
 
